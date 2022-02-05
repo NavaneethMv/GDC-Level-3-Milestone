@@ -137,9 +137,9 @@ $ python tasks.py runserver # Starts the tasks management server"""
     def render_home_page(self):
         return """<h1>Tasks Managing App</h1>
                 <ul>
-                    <li><a href="/add">add</a></li>
+                    <li><a href="/add">Add Task</a></li>
                     <li><a href="/completed">Completed Tasks</a></li>
-                    <li><a href="/tasks">Tasks</a></li>
+                    <li><a href="/tasks">Pending Tasks</a></li>
                 </ul>"""
 
     def render_pending_tasks(self):
@@ -193,6 +193,6 @@ class TasksServer(TasksCommand, BaseHTTPRequestHandler):
             task = post_data.split("=")[1].split("&")[0]
             priority = post_data.split("=")[-1]
             task_command_object.add([priority, task])
-            self.send_response(200)
-            self.send_header("Location", "/")
+            self.send_response(301)
+            self.send_header("Location", "/add")
             self.end_headers()
