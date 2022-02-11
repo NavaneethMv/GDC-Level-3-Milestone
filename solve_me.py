@@ -1,9 +1,5 @@
-from asyncio import tasks
-import html
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import cgi
-from turtle import pos
-
+from urllib.parse import parse_qs
 
 class TasksCommand:
     TASKS_FILE = "tasks.txt"
@@ -154,11 +150,11 @@ $ python tasks.py runserver # Starts the tasks management server"""
         html_string = ""
         for item in self.completed_items:
             html_string += f"<li>{item}</li>"
-        print(self.completed_items)
         return f"<ol>{html_string}</ol>"
 
     def render_add_tasks(self):
-        return """<form action="add" method="POST">
+        return """<a href="/"><h4>Back to Home</h4></a>
+                <form action="add" method="POST">
                 <input type="text" name="task" placeholder="Task" />
                 <input type="text" name="priority" placeholder="Priority"/>
                 <input type="submit" />
@@ -190,8 +186,9 @@ class TasksServer(TasksCommand, BaseHTTPRequestHandler):
         if self.path == "/add":
             content_len = int(self.headers["Content-Length"])
             post_data = self.rfile.read(content_len).decode()
-            task = post_data.split("=")[1].split("&")[0]
-            priority = post_data.split("=")[-1]
+            fields = parse_qs(post_data)
+            task = fields['task'][0]
+            priority = fields['priority'][0]
             task_command_object.add([priority, task])
             self.send_response(301)
             self.send_header("Location", "/add")
